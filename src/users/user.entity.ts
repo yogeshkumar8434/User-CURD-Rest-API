@@ -1,30 +1,23 @@
-import {
-  Entity,
-  BaseEntity,
-  PrimaryGeneratedColumn,
-  Column,
-  Index,
-} from 'typeorm';
-import { UserStatus } from './user-status.enum';
+import { Entity, BaseEntity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { UserStatus } from './user.model';
 
-@Index('user_id_pkey', ['id'], { unique: true })
-@Entity('usermanagment')
-export class User {
+@Entity()
+export class User extends BaseEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar', { name: 'first_name', nullable: false })
-  firstName: string | null;
+  @Column()
+  firstName: string;
 
-  @Column('varchar', { name: 'last_name', nullable: false })
-  lastName: string | null;
+  @Column()
+  lastName: string;
 
-  @Column('varchar', { name: 'email', nullable: false })
-  email: string | null;
+  @Column()
+  email: string;
 
-  @Column('varchar', { name: 'phone_number', nullable: false })
-  phoneNumber: string | null;
+  @Column()
+  phoneNumber: string;
 
-  @Column('varchar', { name: 'status', nullable: false })
+  @Column()
   status: UserStatus;
 }

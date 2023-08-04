@@ -11,5 +11,5 @@ export class CreateUserDto {
   email: string;
 
   @IsNotEmpty()
-  phoneNumber: string;
+  phoneNumber: number;
 }
