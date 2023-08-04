@@ -6,18 +6,27 @@ import {
   Param,
   Patch,
   Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { User, UserStatus } from './user.model';
 import { CreateUserDto } from './dto/create-user.dto';
+import { GetUserFilterDto } from './dto/get-user-filiter.dto';
+import { UserStatusValidationPipe } from './pipes/user-status-validation.pipe';
 
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
   @Get()
-  getAllUsers(): User[] {
-    return this.usersService.getAllUsers();
+  getUsers(@Query(ValidationPipe) filterDto: GetUserFilterDto): User[] {
+    if (Object.keys(filterDto).length) {
+      return this.usersService.getUserWithFilters(filterDto);
+    } else {
+      return this.usersService.getAllUsers();
+    }
   }
 
   @Get('/:id')
@@ -26,6 +35,7 @@ export class UsersController {
   }
 
   @Post()
+  @UsePipes(ValidationPipe)
   createUser(@Body() createUserDto: CreateUserDto): User {
     return this.usersService.createUser(createUserDto);
   }
@@ -35,11 +45,11 @@ export class UsersController {
     return this.usersService.deleteUser(id);
   }
 
-  @Patch('/:id.status')
+  @Patch('/:id/status')
   updateUserStatus(
     @Param('id') id: string,
-    @Body('status') status: UserStatus,
-  ) {
-    
+    @Body('status', UserStatusValidationPipe) status: UserStatus,
+  ): User {
+    return this.usersService.updateUserStatus(id, status);
   }
 }

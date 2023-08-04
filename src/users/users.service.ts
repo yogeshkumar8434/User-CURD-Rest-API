@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { User, UserStatus } from './user.model';
 import { v4 as uuidv4 } from 'uuid';
 import { CreateUserDto } from './dto/create-user.dto';
+import { GetUserFilterDto } from './dto/get-user-filiter.dto';
 
 @Injectable()
 export class UsersService {
@@ -11,8 +12,27 @@ export class UsersService {
     return this.users;
   }
 
+  getUserWithFilters(filterDto: GetUserFilterDto): User[] {
+    const { status, search } = filterDto;
+    let users = this.getAllUsers();
+    if (status) {
+      users = users.filter((user) => user.status === status);
+    }
+    if (search) {
+      users = users.filter(
+        (user) =>
+          user.firstName.includes(search) || user.lastName.includes(search),
+      );
+    }
+    return users;
+  }
+
   getUserById(id: string): User {
-    return this.users.find((user) => user.id === id);
+    const found = this.users.find((user) => user.id === id);
+    if (!found) {
+      throw new NotFoundException(`User Not Found.`);
+    }
+    return found;
   }
 
   createUser(createUserDto: CreateUserDto): User {
@@ -30,7 +50,8 @@ export class UsersService {
   }
 
   deleteUser(id: string): void {
-    this.users = this.users.filter((user) => user.id !== id);
+    const found = this.getUserById(id);
+    this.users = this.users.filter((user) => user.id !== found.id);
   }
 
   updateUserStatus(id: string, status: UserStatus): User {
