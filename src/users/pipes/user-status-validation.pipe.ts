@@ -1,5 +1,5 @@
-import { UserStatus } from '../user.model';
 import { PipeTransform, BadRequestException } from '@nestjs/common';
+import { UserStatus } from '../user-status.enum';
 
 export class UserStatusValidationPipe implements PipeTransform {
   readonly allowedStatuses = [UserStatus.ACTIVE, UserStatus.IN_ACTIVE];
